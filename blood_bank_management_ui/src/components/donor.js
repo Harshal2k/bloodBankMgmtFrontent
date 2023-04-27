@@ -7,18 +7,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faPenToSquare } from '@fortawesome/free-solid-svg-icons'
 import { setPopupState } from "../actions";
 import CustomTable from "./customTable";
-// import 'date-fns';
-// import DateFnsUtils from '@date-io/date-fns';
-// import {
-//     MuiPickersUtilsProvider,
-//     KeyboardTimePicker,
-//     KeyboardDatePicker,
-// } from '@material-ui/pickers';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import moment from "moment";
 
 const Donor = () => {
     const dispatch = useDispatch();
     const [progress, setProgress] = useState(0);
-
+    const [selectedDate, setSelectedDate] = useState(null);
     const [open, setOpen] = useState(false);
     const [editMode, setEditMode] = useState(false);
     const [deleteDonor, setDeleteDonor] = useState({ open: false, bname: '', bid: 0 });
@@ -30,14 +26,17 @@ const Donor = () => {
         blood_type: '',
         phone: '',
         email: '',
-        dob: '',
-        created_at: '',
+        dob: null,
+        created_at: new Date(),
         country: '',
         state: '',
         city: '',
         locality: '',
 
     });
+    const today = new Date();
+    const fiveYearsAgo = new Date();
+    fiveYearsAgo.setFullYear(today.getFullYear() - 5);
 
     const [donorFilters, setdonorFilters] = useState({
         first_name: '',
@@ -47,7 +46,7 @@ const Donor = () => {
         phone: '',
         email: '',
         dob: '',
-        created_at: '',
+        created_at: new Date(),
         country: '',
         state: '',
         city: '',
@@ -72,7 +71,6 @@ const Donor = () => {
     }
 
     const hUpdate = (index) => {
-        console.log({ index });
         setEditMode(true);
         setdonorDetails(allBanks[index] || donorDetails);
         setOpen(true);
@@ -144,10 +142,10 @@ const Donor = () => {
         {
             name: 'Actions',
             type: 'custom',
-            dName: 'blood_bank_id',
+            dName: 'donor_id',
             render: (index, data) => {
                 return <div style={{ display: 'flex', flexDirection: 'row' }}>
-                    <IconButton onClick={() => { setDeleteDonor({ open: true, bname: allBanks[index]?.first_name, bid: allBanks[index]?.blood_bank_id }) }}>
+                    <IconButton onClick={() => { setDeleteDonor({ open: true, bname: allBanks[index]?.first_name, bid: allBanks[index]?.donor_id }) }}>
                         <FontAwesomeIcon icon={faTrash} className="actionIcons danger" />
                     </IconButton>
                     <IconButton onClick={() => { hUpdate(index) }}>
@@ -169,7 +167,6 @@ const Donor = () => {
             [name]: value,
         })
     }
-
     const dropdownChange = (e, value, name) => {
         setdonorDetails({
             ...donorDetails,
@@ -206,7 +203,7 @@ const Donor = () => {
 
     const hCreate = () => {
         setProgress(65);
-        axios.post('http://localhost:8080/api/bloodBank/createBank', donorDetails)
+        axios.post('http://localhost:8080/api/donor/createDonor', donorDetails)
             .then(res => {
                 setProgress(80);
                 dispatch(setPopupState({ status: 'show', message: typeof res?.data?.message == 'string' ? res?.data?.message : 'Success', type: 'success' }));
@@ -222,7 +219,7 @@ const Donor = () => {
 
     const hUpdateBank = () => {
         setProgress(65);
-        axios.patch(`http://localhost:8080/api/bloodBank/updateBank/${donorDetails?.blood_bank_id}`, donorDetails)
+        axios.patch(`http://localhost:8080/api/donor/updateDonor/${donorDetails?.donor_id}`, donorDetails)
             .then(res => {
                 setProgress(80);
                 dispatch(setPopupState({ status: 'show', message: typeof res?.data?.message == 'string' ? res?.data?.message : 'Success', type: 'success' }));
@@ -256,6 +253,18 @@ const Donor = () => {
         setValue(newValue);
     };
 
+    const CustomInput = React.forwardRef(({ value, onClick }, ref) => (
+        <TextField
+            className="formInputs"
+            variant="outlined"
+            label="Date"
+            placeholder="Select date"
+            value={value}
+            inputRef={ref}
+            onClick={onClick}
+        />
+    ));
+
     return (
         <>
             <div className="pollutionContainer">
@@ -278,38 +287,30 @@ const Donor = () => {
                 aria-describedby="scroll-dialog-description"
             >
                 <DialogTitle id="scroll-dialog-title">{editMode ? 'Update' : 'Create'} Donor</DialogTitle>
-                <DialogContent dividers={true}>
+                <DialogContent dividers={true} style={{ alignItems: 'center' }}>
                     <TextField className="formInputs" id="outlined-basic" value={donorDetails?.first_name} name="first_name" onChange={hChange} label="First Name" variant="outlined" />
                     <TextField className="formInputs" id="outlined-basic" value={donorDetails?.last_name} name="last_name" onChange={hChange} label="Last Name" variant="outlined" />
-                    <Autocomplete className="formInputs" variant="outlined" sx={{ width: '90%' }} disablePortal onChange={(e, value) => { dropdownChange(e, value, "gender") }} name={"gender"} options={['Male', 'Female']}
-                        renderInput={(params) => <TextField size="small" className="formInputs" {...params} label="Gender" />}
-                    />
-                    <Autocomplete className="formInputs" variant="outlined" sx={{ width: '90%' }} disablePortal onChange={(e, value) => { dropdownChange(e, value, "blood_type") }} name={"blood_type"} options={['A+', 'B+', 'AB+', 'A-', 'B-', 'AB-', 'O+', 'O-']}
-                        renderInput={(params) => <TextField size="small" className="formInputs" {...params} label="Blood Type" />}
-                    />
-                    {/* <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                        <Grid container justifyContent="space-around">
-                            <KeyboardDatePicker
-                                disableToolbar
-                                variant="inline"
-                                format="MM/dd/yyyy"
-                                margin="normal"
-                                id="date-picker-inline"
-                                label="Date picker inline"
-                                value={value}
-                                onChange={handleChange}
-                                KeyboardButtonProps={{
-                                    'aria-label': 'change date',
-                                }}
-                            />
-                        </Grid>
-                    </MuiPickersUtilsProvider> */}
+                    <div style={{ width: '91%', display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+                        <Autocomplete style={{ width: 'inherit' }} variant="outlined" disabled={editMode} disablePortal value={donorDetails?.gender} onChange={(e, value) => { dropdownChange(e, value, "gender") }} name={"gender"} options={['Male', 'Female']}
+                            renderInput={(params) => <TextField variant="outlined" className="formInputs" {...params} label="Gender" />}
+                        />
+                        <Autocomplete style={{ width: 'inherit', marginLeft: '1rem' }} disabled={editMode} variant="outlined" disablePortal value={donorDetails?.blood_type} onChange={(e, value) => { dropdownChange(e, value, "blood_type") }} name={"blood_type"} options={['A+', 'B+', 'AB+', 'A-', 'B-', 'AB-', 'O+', 'O-']}
+                            renderInput={(params) => <TextField variant="outlined" className="formInputs" {...params} label="Blood Type" />}
+                        />
+                    </div>
                     <TextField className="formInputs" id="outlined-basic" disabled={editMode} value={donorDetails?.phone} name="phone" onChange={hChange} label="Phone" variant="outlined" />
                     <TextField className="formInputs" id="outlined-basic" value={donorDetails?.email} name="email" onChange={hChange} label="Email" variant="outlined" />
                     <TextField className="formInputs" id="outlined-basic" value={donorDetails?.country} name="country" onChange={hChange} label="Country" variant="outlined" />
                     <TextField className="formInputs" id="outlined-basic" value={donorDetails?.state} name="state" onChange={hChange} label="State" variant="outlined" />
                     <TextField className="formInputs" id="outlined-basic" value={donorDetails?.city} name="city" onChange={hChange} label="city" variant="outlined" />
                     <TextField className="formInputs" id="outlined-basic" value={donorDetails?.locality} name="locality" onChange={hChange} label="locality" variant="outlined" />
+                    <DatePicker
+                        placeholder="Select date"
+                        selected={new Date(donorDetails?.dob)}
+                        onChange={(date) => setdonorDetails({ ...donorDetails, dob: date })}
+                        maxDate={fiveYearsAgo}
+                        customInput={<CustomInput />}
+                    />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>Cancel</Button>

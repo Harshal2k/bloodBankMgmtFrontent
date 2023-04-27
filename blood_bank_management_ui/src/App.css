@@ -989,6 +989,14 @@ tr:nth-child(even) {
   color: #06c624;
 }
 
+.react-datepicker-popper {
+  z-index: 153645 !important;
+}
+
+.react-datepicker__input-container input::placeholder {
+  color: #999;
+}
+
 /* Large screens */
 @media screen and (min-width: 600px) {
   .navbar {
