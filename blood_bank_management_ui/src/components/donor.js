@@ -11,31 +11,44 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import moment from "moment";
 
+let defaultDonarDetails = {
+    first_name: '',
+    last_name: '',
+    gender: '',
+    blood_type: '',
+    phone: '',
+    email: '',
+    dob: null,
+    created_at: new Date(),
+    country: '',
+    state: '',
+    city: '',
+    locality: '',
+}
+
+let defaultDonationDetails = {
+    open: false,
+    phone: '',
+    quantity_ml: 0,
+    blood_type: '',
+    bank: null
+}
+
+let defaultDonation = {
+    quantity_ml: 0,
+    bank: null
+}
+
+
 const Donor = () => {
     const dispatch = useDispatch();
     const [progress, setProgress] = useState(0);
     const [open, setOpen] = useState(false);
     const [editMode, setEditMode] = useState(false);
     const [deleteDonor, setDeleteDonor] = useState({ open: false, bname: '', bid: 0 });
-    const [donorDetails, setdonorDetails] = useState({
-        first_name: '',
-        last_name: '',
-        gender: '',
-        blood_type: '',
-        phone: '',
-        email: '',
-        dob: null,
-        created_at: new Date(),
-        country: '',
-        state: '',
-        city: '',
-        locality: '',
-
-    });
-    const [donation, setDonation] = useState({
-        quantity_ml: 0,
-        bank: null
-    });
+    const [donorDetails, setdonorDetails] = useState(defaultDonarDetails);
+    const [donationDetails, setDonationDetails] = useState(defaultDonationDetails)
+    const [donation, setDonation] = useState(defaultDonation);
     const today = new Date();
     const fiveYearsAgo = new Date();
     fiveYearsAgo.setFullYear(today.getFullYear() - 5);
@@ -157,7 +170,10 @@ const Donor = () => {
     ]
 
     const handleClose = () => {
-        setOpen(!open);
+        setdonorDetails(defaultDonarDetails);
+        setDonation(defaultDonation);
+        setOpen(false);
+        setEditMode(false);
     }
 
     const hChange = (e) => {
@@ -222,7 +238,7 @@ const Donor = () => {
                 setProgress(80);
                 dispatch(setPopupState({ status: 'show', message: typeof res?.data?.message == 'string' ? res?.data?.message : 'Success', type: 'success' }));
                 setProgress(100);
-                getAllDonors(donorFilters, () => { setOpen(!open) })
+                getAllDonors(donorFilters, () => { handleClose(); })
             })
             .catch(({ response }) => {
                 setProgress(100);
@@ -238,7 +254,7 @@ const Donor = () => {
                 setProgress(80);
                 dispatch(setPopupState({ status: 'show', message: typeof res?.data?.message == 'string' ? res?.data?.message : 'Success', type: 'success' }));
                 setProgress(100);
-                getAllDonors(donorFilters, () => { setOpen(!open); setEditMode(false) })
+                getAllDonors(donorFilters, () => { handleClose(); })
             })
             .catch(({ response }) => {
                 setProgress(100);
@@ -276,13 +292,40 @@ const Donor = () => {
         />
     ));
 
-    const hCreateClick = () => {
+    const hCreateClick = (isDonation) => {
         axios.post('http://localhost:8080/api/bloodBank/getBanks',)
             .then((res) => {
                 setAllBanks(res?.data?.message || []);
-                setOpen(!open)
+                if (isDonation) {
+                    setDonationDetails({ ...donationDetails, open: true })
+                } else {
+                    setOpen(true)
+                }
             })
             .catch(({ response }) => {
+                dispatch(setPopupState({ status: 'show', message: response?.data?.message || 'Something Went Wrong!', type: 'response' }));
+            });
+    }
+
+    const donationValidations = () => {
+        if (donationDetails?.phone?.length < 10 || donationDetails?.quantity_ml <= 0 || donationDetails?.bank == null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    const makeDonation = () => {
+        setProgress(65);
+        axios.post('http://localhost:8080/api/bloodBag/createBloodBag', donationDetails)
+            .then((res) => {
+                setProgress(80);
+                dispatch(setPopupState({ status: 'show', message: typeof res?.data?.message == 'string' ? res?.data?.message : 'Success', type: 'success' }));
+                setDonationDetails(defaultDonarDetails)
+                setProgress(100);
+            })
+            .catch(({ response }) => {
+                setProgress(100);
                 dispatch(setPopupState({ status: 'show', message: response?.data?.message || 'Something Went Wrong!', type: 'response' }));
             });
     }
@@ -298,9 +341,12 @@ const Donor = () => {
                     columns={columns}
                     title={"Donors"}
                     btnText={"Add Donor"}
+                    btnText2={"Make A Donation"}
                     data={allDonors}
                     applyFilters={applyFilters}
-                    hClick={hCreateClick} />
+                    hClick={() => { hCreateClick(false) }}
+                    hClick2={() => { hCreateClick(true) }}
+                />
             </div>
             <Dialog
                 open={open}
@@ -330,7 +376,7 @@ const Donor = () => {
                         <>
                             <TextField className="formInputs" id="outlined-basic" value={donation?.quantity_ml} name="quantity_ml" onChange={(e) => { setDonation({ ...donation, quantity_ml: e?.target?.value }) }} label="Blood Quantity (ml)" variant="outlined" />
                             <Autocomplete style={{ width: '91%' }} disabled={editMode} variant="outlined" disablePortal value={donation?.bank} onChange={(e, value) => { dropdownChange(e, value, "bank", true) }} name={"bank"} options={allBanks?.map((bank) => { return { id: bank?.blood_bank_id, label: bank?.b_name } })}
-                                renderInput={(params) => <TextField variant="outlined" className="formInputs" {...params} label="Blood Type" />}
+                                renderInput={(params) => <TextField variant="outlined" className="formInputs" {...params} label="Blood Bank" />}
                             />
                         </>
                     }
@@ -344,6 +390,25 @@ const Donor = () => {
                 <DialogActions>
                     <Button onClick={handleClose}>Cancel</Button>
                     <Button disabled={validations()} onClick={() => { editMode ? hUpdateBank() : hCreate() }}>{editMode ? 'Update' : 'Create'}</Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog
+                open={donationDetails?.open}
+                scroll={"paper"}
+                aria-labelledby="scroll-dialog-title"
+                aria-describedby="scroll-dialog-description"
+            >
+                <DialogTitle id="scroll-dialog-title">Make A Donation</DialogTitle>
+                <DialogContent dividers={true} style={{ alignItems: 'center' }}>
+                    <TextField className="formInputs" id="outlined-basic" value={donationDetails?.phone} name="phone" onChange={(e) => { setDonationDetails({ ...donationDetails, phone: e?.target?.value }) }} label="Phone" variant="outlined" />
+                    <TextField className="formInputs" id="outlined-basic" value={donationDetails?.quantity_ml} name="quantity_ml" onChange={(e) => { setDonationDetails({ ...donationDetails, quantity_ml: e?.target?.value }) }} label="Blood Quantity (ml)" variant="outlined" />
+                    <Autocomplete style={{ width: '91%' }} variant="outlined" disablePortal value={donationDetails?.bank} onChange={(e, value) => { setDonationDetails({ ...donationDetails, bank: value }) }} name={"bank"} options={allBanks?.map((bank) => { return { id: bank?.blood_bank_id, label: bank?.b_name } })}
+                        renderInput={(params) => <TextField variant="outlined" className="formInputs" {...params} label="Blood Bank" />}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => { setDonationDetails(defaultDonarDetails) }}>Cancel</Button>
+                    <Button disabled={donationValidations()} onClick={makeDonation}>Donate</Button>
                 </DialogActions>
             </Dialog>
             <Dialog

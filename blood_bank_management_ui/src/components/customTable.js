@@ -4,7 +4,7 @@ import { setPopupState } from "../actions";
 import { Autocomplete, Button, IconButton, MenuItem, Select, TextField } from "@mui/material";
 import moment from "moment";
 
-const CustomTable = ({ title, btnText, hClick, columns, data, applyFilters }) => {
+const CustomTable = ({ title, btnText, btnText2, hClick, hClick2, columns, data, applyFilters }) => {
     const hChange = (e) => {
         const { name, value } = e.target;
         console.log({ name });
@@ -13,14 +13,20 @@ const CustomTable = ({ title, btnText, hClick, columns, data, applyFilters }) =>
         applyFilters && applyFilters(name, value)
     }
 
-    const dropdownChange = (e, value,name) => {
+    const dropdownChange = (e, value, name) => {
         applyFilters && applyFilters(name, value)
     }
+
     return (
         <div className="tableStyles">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                 <h1 className="info-h1">{title}</h1>
-                <Button style={{ marginRight: '2rem' }} onClick={hClick} variant="contained">{btnText}</Button>
+                {btnText2 &&
+                    <Button style={{ marginRight: '2rem' }} onClick={hClick2} variant="contained">{btnText2}</Button>
+                }
+                {btnText &&
+                    <Button style={{ marginRight: '2rem' }} onClick={hClick} variant="contained">{btnText}</Button>
+                }
             </div>
             <div className="table-container">
                 <table style={{ borderSpacing: '0' }}>
@@ -28,7 +34,7 @@ const CustomTable = ({ title, btnText, hClick, columns, data, applyFilters }) =>
                         <tr>
                             {columns?.map((col) => <th>{col?.name}</th>)}
                         </tr>
-                        <tr>
+                        <tr style={{ backgroundColor: '#dedfe8' }}>
                             {columns?.map((col) => {
                                 if (col?.type == "text") {
                                     return <td>
@@ -58,7 +64,7 @@ const CustomTable = ({ title, btnText, hClick, columns, data, applyFilters }) =>
                                 {columns?.map((elem) => {
                                     if (elem?.type == "custom") {
                                         return <td>{elem?.render(i, row[elem?.dName])}</td>
-                                    }else if(elem?.isDate){
+                                    } else if (elem?.isDate) {
                                         return <td>{moment(row[elem?.dName]).format('Do MMMM YYYY')}</td>
                                     } else {
                                         return <td>{row[elem?.dName]}</td>

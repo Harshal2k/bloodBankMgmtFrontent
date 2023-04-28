@@ -250,8 +250,8 @@ const Hospital = () => {
                     onLoaderFinished={() => setProgress(0)} />
                 <CustomTable
                     columns={columns}
-                    title={"Blood Banks"}
-                    btnText={"Create Blood Bank"}
+                    title={"Hospitals"}
+                    btnText={"Add Hospital"}
                     data={allHospitals}
                     applyFilters={applyFilters}
                     hClick={hCreateClick} />
@@ -260,9 +260,8 @@ const Hospital = () => {
                 open={open}
                 scroll={"paper"}
                 aria-labelledby="scroll-dialog-title"
-                aria-describedby="scroll-dialog-description"
-            >
-                <DialogTitle id="scroll-dialog-title">{editMode ? 'Update' : 'Create'} Blood Bank</DialogTitle>
+                aria-describedby="scroll-dialog-description">
+                <DialogTitle id="scroll-dialog-title">{editMode ? 'Update' : 'Add'} Hospital</DialogTitle>
                 <DialogContent dividers={true}>
                     <TextField className="formInputs" id="outlined-basic" value={hospitalDetails?.hname} name="hname" onChange={hChange} label="Name" variant="outlined" />
                     <TextField className="formInputs" id="outlined-basic" disabled={editMode} value={hospitalDetails?.phone} name="phone" onChange={hChange} label="Phone" variant="outlined" />

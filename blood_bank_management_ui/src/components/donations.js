@@ -46,17 +46,10 @@ const Donation = () => {
 
     const [donorFilters, setdonorFilters] = useState({
         first_name: '',
-        last_name: '',
-        gender: '',
+        quantity_ml: '',
+        remaining_ml: '',
         blood_type: '',
-        phone: '',
-        email: '',
-        dob: '',
-        created_at: new Date(),
-        country: '',
-        state: '',
-        city: '',
-        locality: '',
+        b_name: '',
 
     });
     const [allDonors, setAllDonors] = useState([])
@@ -305,7 +298,7 @@ const Donation = () => {
                 aria-labelledby="scroll-dialog-title"
                 aria-describedby="scroll-dialog-description"
             >
-                <DialogTitle id="scroll-dialog-title">{editMode ? 'Update' : 'Create'} Donor</DialogTitle>
+                <DialogTitle id="scroll-dialog-title">Add Patient</DialogTitle>
                 <DialogContent dividers={true} style={{ alignItems: 'center' }}>
                     <TextField className="formInputs" id="outlined-basic" value={donationDetails?.first_name} name="first_name" onChange={hChange} label="First Name" variant="outlined" />
                     <TextField className="formInputs" id="outlined-basic" value={donationDetails?.last_name} name="last_name" onChange={hChange} label="Last Name" variant="outlined" />
@@ -336,7 +329,7 @@ const Donation = () => {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>Cancel</Button>
-                    <Button disabled={validations()} onClick={() => { hCreate() }}>{editMode ? 'Update' : 'Create'}</Button>
+                    <Button disabled={validations()} onClick={() => { hCreate() }}>Add</Button>
                 </DialogActions>
             </Dialog>
             <Dialog

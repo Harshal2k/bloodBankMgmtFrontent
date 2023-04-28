@@ -62,15 +62,11 @@
 }
 
 * {
-  user-select: none;
-  /* supported by Chrome and Opera */
+  /* user-select: none;
   -webkit-user-select: none;
-  /* Safari */
   -khtml-user-select: none;
-  /* Konqueror HTML */
   -moz-user-select: none;
-  /* Firefox */
-  -ms-user-select: none;
+  -ms-user-select: none; */
   font-family: 'Cabin', sans-serif;
   -webkit-tap-highlight-color: transparent;
 }
@@ -270,7 +266,7 @@ footer #hgIcon {
 
 
 .nav-icon-active {
-  fill: var(--nav-active);
+  background-color: var(--nav-secondary);
 }
 
 .nav-item:hover {

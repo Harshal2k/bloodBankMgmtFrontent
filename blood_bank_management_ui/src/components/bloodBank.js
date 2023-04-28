@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { setPopupState } from "../../actions";
 import LoadingBar from "react-top-loading-bar";
 import { TextField, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, IconButton } from "@mui/material";
-import CustomTable from "../customTable";
+import CustomTable from "./customTable";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faPenToSquare } from '@fortawesome/free-solid-svg-icons'
+import { setPopupState } from "../actions";
 
 const BloodBank = () => {
     const dispatch = useDispatch();

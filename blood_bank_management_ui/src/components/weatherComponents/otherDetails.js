@@ -2,7 +2,7 @@ import React from "react";
 
 
 //var elements = [{ name: speed, data: 1000, unit: "" }]
-const OtherDetails = ({ header, elements }) => {
+const OtherDetails = ({ header, elements, style }) => {
     const windStyle = {
         color: "var(--text-primary)",
         fontSize: "2rem",
@@ -42,7 +42,7 @@ const OtherDetails = ({ header, elements }) => {
         }
     }
     return (
-        <div className="OD-div">
+        <div style={style} className="OD-div">
             <h1 style={windStyle}>{header}</h1>
             <div className="OD-info">
                 <h1 style={{ fontSize: '4rem' }} className="info-h1">{elements?.value}</h1>
