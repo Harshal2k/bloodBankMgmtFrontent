@@ -18,6 +18,8 @@ import Popup from "./components/Popup";
 import Dashboard from "./components/weatherComponents/dashboard";
 import BloodBank from "./components/airPollutionComponents/bloodBank";
 import Donor from "./components/donor";
+import Donation from "./components/donations";
+import Hospital from "./components/hospital";
 
 function hideMap() {
   document.querySelector("#mapCont").style.display = "none";
@@ -84,18 +86,18 @@ function App() {
     if (location.pathname === "/") {
       activate("svg1");
       setNavName("🏠 Home");
-    } else if (location.pathname === '/pollution') {
+    } else if (location.pathname === '/bloodbank') {
       activate("svg2");
-      setNavName("🏭 Pollution");
-    } else if (location.pathname === '/hourlyWeatherData') {
+      setNavName("Blood Bank");
+    } else if (location.pathname === '/donors') {
       activate("svg3");
-      setNavName("⏳ Hourly Weather Data");
-    } else if (location.pathname === '/dailyWeatherData') {
+      setNavName("Donors");
+    } else if (location.pathname === '/donations') {
       activate("svg4");
-      setNavName("📆 Daily Weather Data");
-    } else if (location.pathname === '/news') {
+      setNavName("Donations");
+    } else if (location.pathname === '/bloodbanks') {
       activate("svg5");
-      setNavName("📻 News");
+      setNavName("Blood Banks");
     } else if (location.pathname === '/contact') {
       activate("svg6");
       setNavName("☎️ Contact");
@@ -141,7 +143,7 @@ function App() {
         <ul className="navbar-nav">
           <li className="logo">
             <a href="#" className="nav-link">
-              <span className="link-text logo-text">HG Originals</span>
+              <span style={{ letterSpacing: '0.13rem' }} className="link-text logo-text">Help Giving Org</span>
               {icons.hgo}
             </a>
           </li>
@@ -152,31 +154,31 @@ function App() {
             </Link>
           </li>
 
-          <li className="nav-item" onClick={() => { activate("svg2"); setNavName("🏭 Pollution"); }}>
-            <Link className="nav-link" to="/pollution">
+          <li className="nav-item" onClick={() => { activate("svg2"); setNavName("Blood Bank"); }}>
+            <Link className="nav-link" to="/bloodbank">
               {icons.pollution}
-              <span className="link-text">Pollution</span>
+              <span className="link-text">Blood Bank</span>
             </Link>
           </li>
 
-          <li className="nav-item" onClick={() => { activate("svg3"); setNavName("⏳ Hourly Weather Data"); }}>
-            <Link className="nav-link" to="/hourlyWeatherData">
+          <li className="nav-item" onClick={() => { activate("svg3"); setNavName("Donors"); }}>
+            <Link className="nav-link" to="/donors">
               {icons.hourlyWeather}
-              <span style={{ marginLeft: "0.7rem" }} className="link-text">Hourly Weather Data</span>
+              <span style={{ marginLeft: "0.7rem" }} className="link-text">Donors</span>
             </Link>
           </li>
 
-          <li className="nav-item" onClick={() => { activate("svg4"); setNavName("📆 Daily Weather Data"); }}>
-            <Link className="nav-link" to="/dailyWeatherData">
+          <li className="nav-item" onClick={() => { activate("svg4"); setNavName("Donations"); }}>
+            <Link className="nav-link" to="/donations">
               {icons.dailyWeather}
-              <span style={{ marginLeft: "0.7rem" }} className="link-text">Daily Weather Data</span>
+              <span style={{ marginLeft: "0.7rem" }} className="link-text">Donations</span>
             </Link>
           </li>
 
-          <li className="nav-item" onClick={() => { activate("svg5"); setNavName("📻 News"); }}>
-            <Link className="nav-link" to="/news">
+          <li className="nav-item" onClick={() => { activate("svg5"); setNavName("Blood Banks"); }}>
+            <Link className="nav-link" to="/bloodbanks">
               {icons.news}
-              <span className="link-text">News</span>
+              <span className="link-text">Blood Banks</span>
             </Link>
           </li>
 
@@ -203,15 +205,14 @@ function App() {
         </ul>
       </nav>
       <div className="AppDiv">
-        <h1 className="App-h1" style={{ borderRadius: "2rem", padding: "1.2rem" }}><span style={{ display: 'block' }}>{icons.hgo}</span>HGO Weather App</h1>
+        <h1 className="App-h1" style={{ borderRadius: "2rem", padding: "1.2rem" }}><span style={{ display: 'block' }}>{icons.hgo}</span>Blood Bank Management</h1>
         <h2 id="abc" className="App-h1" style={{ padding: "0.8rem" }}>{navName}</h2>
-        {/* <Search show={!['📻 News', '☎️ Contact', '📝 About'].includes(navName)} /> */}
         <Routes>
           <Route path="/" element={<Dashboard />}></Route>
-          <Route path="/pollution" element={<BloodBank />}></Route>
-          <Route path="/hourlyWeatherData" element={<Donor />}></Route>
-          <Route path="/dailyWeatherData" element={<DailyWeatherData />}></Route>
-          <Route path="/news" element={<News />}></Route>
+          <Route path="/bloodbank" element={<BloodBank />}></Route>
+          <Route path="/donors" element={<Donor />}></Route>
+          <Route path="/donations" element={<Donation />}></Route>
+          <Route path="/bloodbanks" element={<Hospital />}></Route>
           <Route path="/contact" element={<ContactInfo />}></Route>
           <Route path="/about" element={<About />}></Route>
         </Routes>
@@ -232,8 +233,8 @@ function App() {
       </div>
       <footer>
         {icons.hgo}
-        <p style={{ color: "var(--nav-text)", fontSize: "1rem" }} className="info-p">HARSHAL GOSAWI</p>
-        <p style={{ letterSpacing: "0.6rem" }} className="info-p">ORIGINALS</p>
+        <p style={{ color: "var(--nav-text)", fontSize: "1.25rem" }} className="info-p">HELP GIVING</p>
+        <p style={{ letterSpacing: "0.31rem" }} className="info-p">ORGANIZATION</p>
       </footer>
     </div>
 

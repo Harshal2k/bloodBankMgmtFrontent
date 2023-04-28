@@ -997,6 +997,14 @@ tr:nth-child(even) {
   color: #999;
 }
 
+/* .react-datepicker-wrapper {
+  display: inline !important;
+}
+
+.react-datepicker__input-container {
+  display: inline !important;
+} */
+
 /* Large screens */
 @media screen and (min-width: 600px) {
   .navbar {
